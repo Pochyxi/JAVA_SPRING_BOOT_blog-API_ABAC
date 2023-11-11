@@ -9,8 +9,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
+@PropertySource("classpath:application-secret.properties")
 @OpenAPIDefinition(
         info = @Info(
                 title = "Spring Boot Blog App REST APIs",
