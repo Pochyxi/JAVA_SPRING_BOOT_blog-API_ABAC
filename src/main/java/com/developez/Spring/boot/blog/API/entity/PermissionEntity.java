@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "permission")
+@Table(name = "permissions")
 public class PermissionEntity {
 
     @Id
