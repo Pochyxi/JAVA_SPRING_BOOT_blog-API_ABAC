@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -82,12 +83,11 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword( passwordEncoder.encode( signupDto.getPassword() ) );
 
         // Impostare i permessi dell'utente
-        Set<PermissionEntity> permissions = new HashSet<>();
 
-        PermissionEntity getPostPermission = permissionRepository.findByName( Permission.GET_POST )
-                .orElseThrow(() -> new BlogAPIException(HttpStatus.BAD_REQUEST, "Permesso GET_POST non trovato"));
+        List<PermissionEntity> permissionEntities = getPermissionEntity( List.of(Permission.GET_POST,
+                Permission.GET_COMMENT) );
 
-        permissions.add(getPostPermission);
+        Set<PermissionEntity> permissions = new HashSet<>( permissionEntities );
 
         user.setPermissions(permissions);
 
@@ -95,5 +95,10 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         return "Utente registrato con successo";
+    }
+
+    private List<PermissionEntity> getPermissionEntity(List<Permission> permissions) {
+        return permissionRepository.findByNameIn(permissions);
+
     }
 }

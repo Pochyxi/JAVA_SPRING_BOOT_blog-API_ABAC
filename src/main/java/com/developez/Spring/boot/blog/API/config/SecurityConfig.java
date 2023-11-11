@@ -33,12 +33,6 @@ import java.util.List;
                 type = SecuritySchemeType.HTTP,
                 bearerFormat = "JWT",
                 scheme = "bearer"
-        ),
-        @SecurityScheme(
-                name = "csrfToken",  // Nome dello schema di sicurezza per CSRF
-                type = SecuritySchemeType.APIKEY,
-                paramName = "X-XSRF-TOKEN",  // Nome dell'header
-                in = SecuritySchemeIn.HEADER  // Posizione dell'header
         )
 })
 public class SecurityConfig {
@@ -70,11 +64,6 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain( HttpSecurity http ) throws Exception {
 
-        // Crea un nuovo gestore di attributi di richiesta CSRF
-//        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-        // Imposta il nome dell'attributo della richiesta CSRF a "_csrf"
-//        requestHandler.setCsrfRequestAttributeName( "_csrf" );
-
         http
                 // Configura CORS
                 .cors( ( httpSecurityCorsConfigurer ) -> httpSecurityCorsConfigurer
@@ -105,14 +94,9 @@ public class SecurityConfig {
                         } )
                 )
                 .csrf().disable()
-                // Aggiunge il filtro CSRF personalizzato dopo il filtro di autenticazione di base
-//                .addFilterAfter(
-//                        new CsrfCookieFilter(), UsernamePasswordAuthenticationFilter.class
-//                )
                 .authorizeHttpRequests( ( authorize ) ->
                         authorize.requestMatchers( HttpMethod.GET, "/api/**" ).permitAll()
                                 .requestMatchers( HttpMethod.GET, "/api/posts" ).hasAuthority( Permission.GET_POST.name() )
-//                            .requestMatchers( HttpMethod.GET, "/api/categories/**").permitAll()
                                 .requestMatchers( "/api/auth/**" ).permitAll()
                                 .requestMatchers( "/" ).permitAll()
                                 // Accesso pubblico a Swagger
