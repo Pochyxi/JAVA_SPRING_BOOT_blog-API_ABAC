@@ -42,18 +42,16 @@ public class CategoryController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @PostMapping
-    @PreAuthorize( "hasRole('ADMIN')" )
-    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto ) {
+    @PreAuthorize("hasAuthority('CREATE_CATEGORY')")
+    public ResponseEntity<CategoryDto> addCategory( @RequestBody CategoryDto categoryDto ) {
         CategoryDto response = categoryService.addCategory( categoryDto );
 
         return new ResponseEntity<>( response, HttpStatus.CREATED );
     }
+
 
     // Costruzione della getCategory REST API
     @Operation(
@@ -65,9 +63,14 @@ public class CategoryController {
             responseCode = "200",
             description = "Categoria recuperata con successo"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping("/{categoryId}")
-    @PreAuthorize( "hasRole('ADMIN')" )
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable("categoryId") Long categoryId ) {
+    @PreAuthorize("hasAuthority('GET_CATEGORY')")
+    public ResponseEntity<CategoryDto> getCategory( @PathVariable("categoryId") Long categoryId ) {
         CategoryDto response = categoryService.getCategory( categoryId );
 
         return new ResponseEntity<>( response, HttpStatus.OK );
@@ -84,10 +87,17 @@ public class CategoryController {
             responseCode = "200",
             description = "Tutte le Categorie recuperate con successo"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping
+    @PreAuthorize("hasAuthority('GET_CATEGORY')")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         return ResponseEntity.ok( categoryService.getAllCategories() );
     }
+
 
     // Costruzione della updateCategory REST API
     @Operation(
@@ -102,18 +112,16 @@ public class CategoryController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @PutMapping("/{categoryId}")
-    @PreAuthorize( "hasRole('ADMIN')" )
-    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto, @PathVariable("categoryId") Long categoryId ) {
+    @PreAuthorize("hasAuthority('MODIFY_CATEGORY')")
+    public ResponseEntity<CategoryDto> updateCategory( @RequestBody CategoryDto categoryDto, @PathVariable("categoryId") Long categoryId ) {
         CategoryDto response = categoryService.updateCategory( categoryDto, categoryId );
 
         return new ResponseEntity<>( response, HttpStatus.OK );
     }
+
 
     // Costruzione della deleteCategory REST API
     @Operation(
@@ -128,14 +136,11 @@ public class CategoryController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @DeleteMapping("/{categoryId}")
-    @PreAuthorize( "hasRole('ADMIN')" )
-    public ResponseEntity<String> deleteCategory(@PathVariable("categoryId") Long categoryId ) {
+    @PreAuthorize("hasAuthority('DELETE_CATEGORY')")
+    public ResponseEntity<String> deleteCategory( @PathVariable("categoryId") Long categoryId ) {
         categoryService.deleteCategory( categoryId );
 
         return new ResponseEntity<>( "Categoria eliminata con successo", HttpStatus.OK );

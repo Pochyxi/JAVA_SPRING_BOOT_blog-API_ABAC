@@ -45,16 +45,14 @@ public class PostController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
-    @PreAuthorize( "hasRole('ADMIN')" )
+    @PreAuthorize( "hasAuthority('CREATE_POST')" )
     @PostMapping
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto ){
         return new ResponseEntity<>( postService.createPost( postDto ), HttpStatus.CREATED );
     }
+
 
     // Recupero di tutti i Post con paginazione e oggetto PostResponse
     // Utilizzo del sorting
@@ -69,7 +67,13 @@ public class PostController {
             responseCode = "200",
             description = "Recupero di tutti i Post con paginazione e oggetto PostResponse"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping
+    @PreAuthorize( "hasAuthority('GET_POST')" )
     public ResponseEntity<PostResponse> getAllPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize,
@@ -78,6 +82,7 @@ public class PostController {
     ){
         return new ResponseEntity<>( postService.getAllPosts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK );
     }
+
 
     // Recupero di un Post tramite ID
     @Operation(
@@ -89,10 +94,17 @@ public class PostController {
             responseCode = "200",
             description = "Recupero di un Post tramite ID"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping("/{id}")
+    @PreAuthorize( "hasAuthority('GET_POST')" )
     public ResponseEntity<PostDto> getPostById( @PathVariable("id") Long id ){
         return new ResponseEntity<>( postService.getPostById( id ), HttpStatus.OK );
     }
+
 
     // Aggiornamento di un Post tramite ID
     @Operation(
@@ -107,12 +119,9 @@ public class PostController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
-    @PreAuthorize( "hasRole('ADMIN')" )
+    @PreAuthorize( "hasAuthority('MODIFY_POST')" )
     @PutMapping("/{id}")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable("id") Long id ){
         return new ResponseEntity<>( postService.updatePost( postDto, id ), HttpStatus.OK );
@@ -131,13 +140,10 @@ public class PostController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize( "hasRole('ADMIN')" )
+    @PreAuthorize( "hasAuthority('DELETE_POST')" )
     public ResponseEntity<String> deletePostById( @PathVariable("id") Long id ){
         postService.deletePostById( id );
         return new ResponseEntity<>( "Post eliminato con successo.", HttpStatus.OK );
@@ -154,6 +160,11 @@ public class PostController {
             responseCode = "200",
             description = "Recupero di tutti i Post tramite ID di Category"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable("categoryId") Long categoryId) {
         return ResponseEntity.ok( postService.getAllPostsByCategoryId( categoryId ) );

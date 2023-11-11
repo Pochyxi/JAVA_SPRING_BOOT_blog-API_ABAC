@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,12 +43,10 @@ public class CommentController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @PostMapping("/posts/{postId}/comments")
+    @PreAuthorize( "hasAuthority('POST_COMMENT')" )
     public ResponseEntity<CommentDto> createComment( @PathVariable("postId") long postId,
                                                     @Valid @RequestBody CommentDto commentDto) {
         return new ResponseEntity<>(commentService.createComment(postId, commentDto), HttpStatus.CREATED);
@@ -62,7 +61,13 @@ public class CommentController {
             responseCode = "200",
             description = "Commenti recuperati con successo"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping("/posts/{postId}/comments")
+    @PreAuthorize( "hasAuthority('GET_COMMENT')" )
     public ResponseEntity<List<CommentDto>> getCommentsByPostId( @PathVariable("postId") long postId ) {
         return new ResponseEntity<>(commentService.getCommentsByPostId(postId), HttpStatus.OK);
     }
@@ -76,7 +81,13 @@ public class CommentController {
             responseCode = "200",
             description = "Commento recuperato con successo"
     )
+    @SecurityRequirements({
+            @SecurityRequirement(
+                    name = "Bear Authentication"
+            )
+    })
     @GetMapping("/posts/{postId}/comments/{commentId}")
+    @PreAuthorize( "hasAuthority('GET_COMMENT')" )
     public ResponseEntity<CommentDto> getCommentById( @PathVariable("postId") long postId,
                                                       @PathVariable("commentId") long commentId ) {
         return new ResponseEntity<>(commentService.getCommentById(postId, commentId), HttpStatus.OK);
@@ -94,12 +105,10 @@ public class CommentController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @PutMapping("/posts/{postId}/comments/{commentId}")
+    @PreAuthorize( "hasAuthority('MODIFY_COMMENT')" )
     public ResponseEntity<CommentDto> updateComment( @PathVariable("postId") long postId,
                                                      @PathVariable("commentId") long commentId,
                                                      @Valid @RequestBody CommentDto commentDto ) {
@@ -118,12 +127,10 @@ public class CommentController {
     @SecurityRequirements({
             @SecurityRequirement(
                     name = "Bear Authentication"
-            ),
-            @SecurityRequirement(
-                    name = "csrfToken"
             )
     })
     @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    @PreAuthorize( "hasAuthority('DELETE_COMMENT')" )
     public ResponseEntity<String> deleteComment(@PathVariable(value = "postId") Long postId,
                                                 @PathVariable(value = "commentId") Long commentId) {
 

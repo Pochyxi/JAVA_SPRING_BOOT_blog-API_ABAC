@@ -7,10 +7,13 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
@@ -29,11 +32,18 @@ public class JwtTokenProvider {
 
         Date expirationDate = new Date( currentDate.getTime() + jwtExpirationInMs );
 
+        Map<String, Object> autorities = new HashMap<>();
+        autorities.put( "authorities", authentication.getAuthorities().stream()
+                .map( GrantedAuthority::getAuthority )
+                .toArray() );
+
         // Ritorna il token JWT
         return Jwts.builder()
                 .setSubject( username )
                 .setIssuedAt( new Date() )
                 .setExpiration( expirationDate )
+                .addClaims( autorities )
+                .setHeaderParam( "typ", "JWT" )
                 .signWith( key() )
                 .compact();
 

@@ -2,6 +2,7 @@ package com.developez.Spring.boot.blog.API.config;
 
 import com.developez.Spring.boot.blog.API.Security.JwtAuthenticationEntryPoint;
 import com.developez.Spring.boot.blog.API.Security.JwtAuthenticationFilter;
+import com.developez.Spring.boot.blog.API.entity.Permission;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -110,6 +111,7 @@ public class SecurityConfig {
 //                )
                 .authorizeHttpRequests( ( authorize ) ->
                         authorize.requestMatchers( HttpMethod.GET, "/api/**" ).permitAll()
+                                .requestMatchers( HttpMethod.GET, "/api/posts" ).hasAuthority( Permission.GET_POST.name() )
 //                            .requestMatchers( HttpMethod.GET, "/api/categories/**").permitAll()
                                 .requestMatchers( "/api/auth/**" ).permitAll()
                                 .requestMatchers( "/" ).permitAll()

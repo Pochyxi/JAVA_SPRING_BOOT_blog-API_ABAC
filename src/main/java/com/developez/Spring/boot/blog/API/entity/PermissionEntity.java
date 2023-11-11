@@ -12,10 +12,17 @@ import lombok.Setter;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "permission")
+public class PermissionEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private Permission name;
+
+    public Permission getName() {
+        return name;
+    }
 }

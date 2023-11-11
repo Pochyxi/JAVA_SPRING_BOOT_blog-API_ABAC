@@ -68,19 +68,4 @@ public class AuthController {
         return new ResponseEntity<>( response, HttpStatus.CREATED );
     }
 
-    @GetMapping("/roles")
-    public ResponseEntity<String> getRoles() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new ResponseEntity<>("Non autenticato", HttpStatus.FORBIDDEN);
-        }
-
-        String roles = authentication.getAuthorities().stream()
-                .map( GrantedAuthority::getAuthority)
-                .collect( Collectors.joining(", "));
-
-        return new ResponseEntity<>(roles, HttpStatus.OK);
-    }
-
-
 }

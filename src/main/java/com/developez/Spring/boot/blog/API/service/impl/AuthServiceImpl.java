@@ -1,12 +1,13 @@
 package com.developez.Spring.boot.blog.API.service.impl;
 
 import com.developez.Spring.boot.blog.API.Security.JwtTokenProvider;
-import com.developez.Spring.boot.blog.API.entity.Role;
+import com.developez.Spring.boot.blog.API.entity.Permission;
+import com.developez.Spring.boot.blog.API.entity.PermissionEntity;
 import com.developez.Spring.boot.blog.API.entity.User;
 import com.developez.Spring.boot.blog.API.exception.BlogAPIException;
 import com.developez.Spring.boot.blog.API.payload.LoginDto;
 import com.developez.Spring.boot.blog.API.payload.SignupDto;
-import com.developez.Spring.boot.blog.API.repository.RoleRepository;
+import com.developez.Spring.boot.blog.API.repository.PermissionRepository;
 import com.developez.Spring.boot.blog.API.repository.UserRepository;
 import com.developez.Spring.boot.blog.API.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -34,13 +35,13 @@ public class AuthServiceImpl implements AuthService {
     public AuthServiceImpl(
             AuthenticationManager authenticationManager,
             UserRepository userRepository,
-            RoleRepository roleRepository,
+            PermissionRepository permissionRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider
     ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -80,15 +81,18 @@ public class AuthServiceImpl implements AuthService {
         // Impostare la password criptata
         user.setPassword( passwordEncoder.encode( signupDto.getPassword() ) );
 
-        // Impostare il ruolo dell'utente
-        Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName( "ROLE_USER" ).orElseThrow( () -> new BlogAPIException( HttpStatus.BAD_REQUEST, "Ruolo non trovato" ) );
-        roles.add( userRole );
-        user.setRoles( roles );
+        // Impostare i permessi dell'utente
+        Set<PermissionEntity> permissions = new HashSet<>();
+
+        PermissionEntity getPostPermission = permissionRepository.findByName( Permission.GET_POST )
+                .orElseThrow(() -> new BlogAPIException(HttpStatus.BAD_REQUEST, "Permesso GET_POST non trovato"));
+
+        permissions.add(getPostPermission);
+
+        user.setPermissions(permissions);
 
         // Salvare l'utente
-        userRepository.save( user );
-
+        userRepository.save(user);
 
         return "Utente registrato con successo";
     }
